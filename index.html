@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16a34a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mobilitat Salomó">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<title>Mobilitat Salomó · Horaris i trajectes</title>
+<style>
+:root{--bg:#f6f7f9;--fg:#15181d;--mut:#5d6674;--card:#fff;--line:#dfe3e8;--tren:#b3237a;--bus:#1f5fbf;--ok:#1b7f4b;--warn:#8a5a00;--warnbg:#fff4d6;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101317;--fg:#eceff3;--mut:#9aa4b2;--card:#1a1f26;--line:#2b323c;--tren:#ec6fb8;--bus:#7fb0ff;--ok:#5fd394;--warn:#f1c76b;--warnbg:#332a10;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101317;--fg:#eceff3;--mut:#9aa4b2;--card:#1a1f26;--line:#2b323c;--tren:#ec6fb8;--bus:#7fb0ff;--ok:#5fd394;--warn:#f1c76b;--warnbg:#332a10;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:520px;margin:0 auto;padding:14px}
+h1{font-size:20px;margin:0}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.clock{color:var(--mut);font-variant-numeric:tabular-nums}
+.warn{background:var(--warnbg);color:var(--warn);border-radius:10px;padding:8px 10px;font-size:13px;margin:10px 0}
+.days{display:flex;gap:6px;margin:8px 0 12px}
+.days button,.tabs button{flex:1;padding:9px 4px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:10px;font:inherit;font-size:14px}
+.days button.on,.tabs button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.hub{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto auto auto;gap:8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:left;font:inherit;color:var(--fg);min-height:104px;cursor:pointer}
+.card small{color:var(--mut);display:block}
+.card b{font-size:22px;font-variant-numeric:tabular-nums;display:block;margin-top:4px}
+.card .t{font-weight:600;font-size:14px}
+.bcn{grid-column:2;grid-row:1;border-top:4px solid var(--tren)}
+.lle{grid-column:1;grid-row:2;border-top:4px solid var(--tren)}
+.bus{grid-column:3;grid-row:2;border-top:4px solid var(--bus)}
+.alt{grid-column:2;grid-row:3;border-style:dashed}
+.centre{grid-column:2;grid-row:2;display:flex;align-items:center;justify-content:center;text-align:center;background:var(--fg);color:var(--bg);border-radius:50%;aspect-ratio:1;font-weight:700;font-size:15px;align-self:center}
+.back{background:none;border:0;color:var(--bus);font:inherit;padding:6px 0;cursor:pointer}
+.tabs{display:flex;gap:6px;margin:8px 0}
+.item{background:var(--card);border:1px solid var(--line);border-radius:12px;margin:8px 0;overflow:hidden}
+.item.past{opacity:.5}
+.item.next{border:2px solid var(--ok)}
+.row{display:flex;gap:10px;align-items:center;width:100%;padding:10px 12px;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.row .h{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;min-width:68px}
+.row .d{flex:1;line-height:1.25}
+.row .d small{color:var(--mut);display:block}
+.chip{font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;color:#fff;white-space:nowrap}
+.chip.tren{background:var(--tren)}.chip.bus{background:var(--bus)}
+.next .chip.nx{background:var(--ok);margin-left:4px}
+.stops{border-top:1px solid var(--line);padding:6px 12px 10px;font-size:14px}
+.stops div{display:flex;justify-content:space-between;padding:2px 0}
+.stops .me{font-weight:700}
+.stops .tm{font-variant-numeric:tabular-nums;color:var(--mut)}
+.empty{color:var(--mut);padding:16px 4px}
+footer{color:var(--mut);font-size:12px;margin:18px 0 6px}
+:root{--land:#e8ecf1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--land:#222a34}}
+:root[data-theme="dark"]{--land:#222a34}
+.map{width:100%;height:auto;max-height:46vh;background:var(--card);border:1px solid var(--line);border-radius:14px;margin:6px 0 10px;display:block}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.card{display:flex;flex-direction:column;gap:2px;min-height:0}
+.card.alt{width:100%}
+.ico{display:inline-flex;vertical-align:middle}.ico.tren{color:var(--tren)}.ico.bus{color:var(--bus)}
+.item.past{opacity:.4}
+:root{--sal:#16a34a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--sal:#4ade80}}
+:root[data-theme="dark"]{--sal:#4ade80}
+.sub{color:var(--mut);font-size:13px}
+.row .h small{display:block;font-size:12px;font-weight:400;color:var(--mut)}
+.ln{margin:10px 0 12px 12px;padding-left:16px;border-left:3px solid var(--mut)}
+.ln.tren{border-color:var(--tren)}.ln.bus{border-color:var(--bus)}
+.st{position:relative;padding:4px 0;font-size:15px}
+.st i{position:absolute;left:-26px;top:9px;width:11px;height:11px;border-radius:50%;background:var(--card);border:2px solid var(--fg)}
+.st.sal{font-weight:700;color:var(--sal)}.st.sal i{background:var(--sal);border-color:var(--sal)}
+.stops .me{color:var(--sal)}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
