@@ -37,28 +37,34 @@ function map(){const x0=67.4,y0=147,w=71.1,h=40,fs=2.3;
  s+=dot(DEST.TGN.pts[4],"TGN")+dot(DEST.TRE.pts[4],"TRE")+dot(SAL,null,1);
  s+=txt(137,163.5,"Barcelona ›","end","BCN",1)+txt(68.5,157,"‹ Lleida","start","LLE",1);
  return s+"</svg>"}
-function card(D){const d=DEST[D],L=items(D,"out"),nx=day===TODAY?L.find(x=>x.t>=nowMin()):L[0];
- return `<button class="card" onclick="go('${D}')"><span class="ico ${d.mode}">${IC[d.mode]}</span><span class="t">${d.n}</span>`+
- (nx?`<b>${hhmm(nx.t)}</b><small>${day===TODAY?"propera sortida":"primera sortida"}</small>`:`<small>Cap sortida ${day===TODAY?"avui":"aquest dia"}</small>`)+`</button>`}
-function line(D){const d=DEST[D],a=tab==="in"?[...d.ln].reverse():d.ln;
- return `<div class="ln ${d.mode}">${a.map(n=>`<div class="st ${n==="Salomó"?"sal":""}"><i></i>${n}</div>`).join("")}</div>`}
+/* Quilòmetres aproximats acumulats de cada parada (en l’ordre de DEST[x].ln), per dibuixar la línia amb proporcions */
+const KM={BCN:[0,11,19,86,88.5,90],LLE:[0,6,10,14,19,100],TGN:[0,6,10,17,25],TRE:[0,3,6,10,14]};
+function row(D){const d=DEST[D],L=items(D,"out"),nx=L.find(x=>x.t>=nowMin());
+ return `<button class="rw" onclick="go('${D}')"><span class="rn">${d.n}</span><span class="rt">`+
+ (nx?`<b>${hhmm(nx.t)}</b> <small>propera sortida</small>`:`<small>${L.length?"Cap més sortides avui":"Sense servei avui"}</small>`)+`</span><span class="chev">›</span></button>`}
+function box(t,mode,rows){return `<section class="box"><h2><span class="ico ${mode}">${IC[mode]}</span> ${t}</h2>${rows}</section>`}
+function line(D){const d=DEST[D],rev=tab==="in",T=KM[D][KM[D].length-1],ns=rev?[...d.ln].reverse():d.ln,
+ k=rev?[...KM[D]].reverse().map(x=>T-x):KM[D],sc=Math.min(8,Math.max(2.2,360/T)),G=34,y=[];
+ k.forEach((v,i)=>y.push(i?Math.max(v*sc,y[i-1]+G):0));
+ const H=y[y.length-1];
+ return `<div class="ln ${d.mode}" style="height:${H+26}px"><div class="ar" style="height:${H+6}px"></div><div class="bar" style="height:${H}px"></div>`+
+ ns.map((n,i)=>`<div class="st ${n==="Salomó"?"sal":""}" style="top:${y[i]}px"><i></i>${n}</div>`).join("")+`</div>`}
 function render(){const a=document.getElementById("app"),d=new Date(),n=nowMin();
- let h=`<div class="top"><div><h1>Mobilitat Salomó</h1><div class="sub">Transport públic i trajectes</div></div><span class="clock">${d.toLocaleTimeString("ca",{hour:"2-digit",minute:"2-digit"})}</span></div>
- <div class="warn">⚠ Versió de prova. Tren: horaris del servei modificat per robatori de cable (des del 28 de juliol), pendents de confirmar que continuen vigents; el tram La Plana-Picamoixons–Lleida es cobreix amb bus alternatiu, no inclòs. Bus: horari d’estiu 2023. Els festius s’han de triar a mà.</div>
- <div class="days">${Object.keys(DAYS).map(k=>`<button class="${k===day?"on":""}" onclick="setDay('${k}')">${DAYS[k]}</button>`).join("")}</div>`;
- if(view==="hub"){h+=map()+`<div class="grid">${["BCN","LLE","TGN","TRE"].map(card).join("")}</div><button class="card alt" onclick="go('CAR')"><span class="ico">${IC.car}</span><span class="t">Transport amb cotxe</span><small>Temps, quilòmetres i carretera cap a ciutats i pobles</small></button>`}
+ let h=`<div class="top"><div><h1>Mobilitat Salomó</h1><div class="sub">Transport públic i trajectes</div></div><span class="clock">${d.toLocaleTimeString("ca",{hour:"2-digit",minute:"2-digit"})}</span></div>`;
+ const days=`<div class="days">${Object.keys(DAYS).map(k=>`<button class="${k===day?"on":""}" onclick="setDay('${k}')">${DAYS[k]}</button>`).join("")}</div>`;
+ if(view==="hub"){h+=map()+box("Tren","tren",row("BCN")+row("LLE"))+box("Bus","bus",row("TGN")+row("TRE"))+box("Cotxe","car",`<button class="rw" onclick="go('CAR')"><span class="rn">Transport amb cotxe</span><span class="rt"><small>temps, km i carretera</small></span><span class="chev">›</span></button>`)}
  else if(view==="CAR"){h+=`<button class="back" onclick="go('hub')">← Salomó</button><h1><span class="ico">${IC.car}</span> Transport amb cotxe</h1><div class="warn">Trajectes des de Salomó. Estimacions sense trànsit, a partir de distàncies i velocitats habituals; no estan verificades amb cap servei de rutes. Comprova-les amb Google Maps.</div>`+
   CAR.map(c=>`<div class="item"><div class="row"><span class="h">${c[1]} min<small>${c[2]} km</small></span><span class="d">${c[0]}<small>${c[3]}</small></span></div></div>`).join("")}
  else{const D=DEST[view],L=items(view,tab);
-  h+=`<button class="back" onclick="go('hub')">← Salomó</button><h1><span class="ico ${D.mode}">${IC[D.mode]}</span> ${D.n}</h1>
+  h+=`<button class="back" onclick="go('hub')">← Salomó</button><h1><span class="ico ${D.mode}">${IC[D.mode]}</span> ${D.n}</h1>${days}
   <div class="tabs"><button class="${tab==="out"?"on":""}" onclick="setTab('out')">Direcció ${D.n}</button><button class="${tab==="in"?"on":""}" onclick="setTab('in')">Direcció Salomó</button></div>${line(view)}`;
   if(!L.length)h+=`<p class="empty">Cap servei en aquesta direcció aquest dia.</p>`;
   L.forEach((x,k)=>{const id=view+tab+k,past=day===TODAY&&x.t<n;
    h+=`<div class="item ${past?"past":""}"><button class="row" onclick="tog('${id}')"><span class="ico ${x.s.mode}">${IC[x.s.mode]}</span><span class="h">${hhmm(x.t)}</span><span class="d">${x.lab}<small>${x.sub} · ${x.s.line}${x.s.id?" "+x.s.id:""}</small></span></button>`+
    (open.has(id)?`<div class="stops">${x.shown.map(p=>`<div class="${p.n==="Salomó"?"me":""}"><span>${p.n}</span><span class="tm">${p.s}</span></div>`).join("")}</div>`:"")+`</div>`})}
- h+=`<footer>Dades: PDF Rodalies R13/R14 (modificació de servei per robatori de cable) i horari Empresa Plana (dilluns a divendres feiners). Els trens sense marca al PDF es tracten com a “tots els dies”.</footer>`;
+ h+=`<footer>Dades: PDF Rodalies R13/R14 (servei modificat per robatori de cable) i horari Empresa Plana (dilluns a divendres feiners). Distàncies de la línia aproximades. Vigència dels horaris pendent de verificar.</footer>`;
  a.innerHTML=h}
-function go(v){view=v;tab="out";open=new Set();render();scrollTo(0,0)}
+function go(v){view=v;tab="out";open=new Set();if(v==="hub")day=TODAY;render();scrollTo(0,0)}
 function setDay(k){day=k;open=new Set();render()}
 function setTab(t){tab=t;open=new Set();render()}
 function tog(id){open.has(id)?open.delete(id):open.add(id);render()}

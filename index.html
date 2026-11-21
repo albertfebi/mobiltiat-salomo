@@ -69,12 +69,22 @@ footer{color:var(--mut);font-size:12px;margin:18px 0 6px}
 :root[data-theme="dark"]{--sal:#4ade80}
 .sub{color:var(--mut);font-size:13px}
 .row .h small{display:block;font-size:12px;font-weight:400;color:var(--mut)}
-.ln{margin:10px 0 12px 12px;padding-left:16px;border-left:3px solid var(--mut)}
-.ln.tren{border-color:var(--tren)}.ln.bus{border-color:var(--bus)}
-.st{position:relative;padding:4px 0;font-size:15px}
-.st i{position:absolute;left:-26px;top:9px;width:11px;height:11px;border-radius:50%;background:var(--card);border:2px solid var(--fg)}
-.st.sal{font-weight:700;color:var(--sal)}.st.sal i{background:var(--sal);border-color:var(--sal)}
 .stops .me{color:var(--sal)}
+.ln{position:relative;margin:12px 0 14px 4px}
+.bar{position:absolute;left:30px;top:0;width:3px;border-radius:2px;background:var(--mut)}
+.ln.tren .bar{background:var(--tren)}.ln.bus .bar{background:var(--bus)}
+.ar{position:absolute;left:9px;top:0;width:2px;background:var(--mut);opacity:.55}
+.ar::after{content:"";position:absolute;left:-5px;bottom:-1px;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid var(--mut)}
+.ln.tren .ar{background:var(--tren)}.ln.tren .ar::after{border-top-color:var(--tren)}
+.ln.bus .ar{background:var(--bus)}.ln.bus .ar::after{border-top-color:var(--bus)}
+.st{position:absolute;left:46px;right:0;transform:translateY(-8px);font-size:15px;line-height:1.2}
+.st i{position:absolute;left:-20px;top:3px;width:11px;height:11px;border-radius:50%;background:var(--card);border:2px solid var(--fg)}
+.st.sal{font-weight:700;color:var(--sal)}.st.sal i{background:var(--sal);border-color:var(--sal)}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;margin:0 0 10px;padding:6px 12px 4px}
+.box h2{font-size:15px;margin:6px 0 2px;display:flex;align-items:center;gap:8px}
+.rw{display:flex;align-items:center;gap:8px;width:100%;background:none;border:0;border-top:1px solid var(--line);color:inherit;font:inherit;padding:11px 0;text-align:left;cursor:pointer}
+.box h2+.rw{border-top:0}
+.rn{flex:1;font-weight:600}.rt{text-align:right;font-size:15px}.rt small{color:var(--mut);font-size:12px}.chev{color:var(--mut);font-size:20px}
 </style>
 </head>
 <body>
